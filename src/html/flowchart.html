@@ -3,14 +3,10 @@
 <head>
     <title>Flowchart</title>
     <meta name="description" content="Interactive flowchart diagram implemented by GoJS in JavaScript for HTML."/>
-    <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
     <meta charset="UTF-8">
     <script src="../js/lib/go-debug.js"></script>
-    <!--<link href="../assets/css/goSamples.css" rel="stylesheet" type="text/css"/>  &lt;!&ndash; you don't need to use this &ndash;&gt;-->
-    <!--<script src="../js/lib/goSamples.js"></script>  &lt;!&ndash; this is only for the GoJS Samples framework &ndash;&gt;-->
     <script id="code">
         function init() {
-//            if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
             var MAKE = go.GraphObject.make;  // for conciseness in defining templates
             myDiagram =
                 MAKE(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
