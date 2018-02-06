@@ -12,6 +12,17 @@
     <script src="../js/lib/go-debug.js"></script>
     <script id="code">
         function init() {
+            window.vue = new Vue({
+                el: '#sample',
+                data: function () {
+                    return {
+                        visible: false
+                    }
+                },
+                methods: {
+                }
+            })
+
             var MAKE = go.GraphObject.make;  // for conciseness in defining templates
             myDiagram =
                 MAKE(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
@@ -54,10 +65,13 @@
                         mouseLeave: function (e, obj) {
                             showPorts(obj.part, false);
                         },
-                        click: function (e, obj) {
-                            console.log(e)
-                            console.log(obj)
-                            console.log('click')
+                        doubleClick: function (e, obj) {
+                            console.log(obj.data)
+                            console.log(obj.data.key)
+                            console.log(obj.data.text)
+                            console.log('doubleClick')
+                            window.vue.$message('message')
+
                         }
                     }
                 ];
@@ -261,16 +275,10 @@
   "nodeDataArray": [
 {"category":"Comment", "loc":"360 -10", "text":"Kookie Brittle", "key":-13},
 {"key":-1, "category":"Start", "loc":"175 0", "text":"Start"},
-{"key":0, "loc":"0 77", "text":"Preheat oven to 375 F"},
-{"key":1, "loc":"175 100", "text":"In a bowl, blend: 1 cup margarine, 1.5 teaspoon vanilla, 1 teaspoon salt"},
-{"key":2, "loc":"175 190", "text":"Gradually beat in 1 cup sugar and 2 cups sifted flour"},
-{"key":3, "loc":"175 270", "text":"Mix in 6 oz (1 cup) Nestle's Semi-Sweet Chocolate Morsels"},
-{"key":4, "loc":"175 370", "text":"Press evenly into ungreased 15x10x1 pan"},
-{"key":5, "loc":"352 85", "text":"Finely chop 1/2 cup of your choice of nuts"},
-{"key":6, "loc":"175 440", "text":"Sprinkle nuts on top"},
-{"key":7, "loc":"175 500", "text":"Bake for 25 minutes and let cool"},
-{"key":8, "loc":"175 570", "text":"Cut into rectangular grid"},
-{"key":-2, "category":"End", "loc":"175 640", "text":"Enjoy!"}
+{"key":1, "loc":"175 100", "text":"Step"},
+{"key":2, "loc":"175 190", "text":"Step"},
+{"key":3, "loc":"175 270", "text":"Step"},
+{"key":-2, "category":"End", "loc":"175 340", "text":"End"}
  ],
   "linkDataArray": [
 {"from":1, "to":2, "fromPort":"B", "toPort":"T"},
@@ -287,22 +295,6 @@
 {"from":0, "to":4, "fromPort":"B", "toPort":"T"}
  ]}
   </textarea>
-<div @click="test">测试vue</div>
 </div>
-<script>
-    new Vue({
-        el: '#sample',
-        data: function () {
-            return {visible: false}
-        },
-        methods: {
-            test: function () {
-                console.log('test vue')
-                this.$message('这是一条消息提示');
-            }
-        }
-    })
-    console.log(Vue)
-</script>
 </body>
 </html>
