@@ -1,4 +1,3 @@
-# browser-sync_gulp_demo161105
 browser-sync和gulp例子
 
 说明：  
