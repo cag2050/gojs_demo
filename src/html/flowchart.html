@@ -4,6 +4,11 @@
     <title>Flowchart</title>
     <meta name="description" content="Interactive flowchart diagram implemented by GoJS in JavaScript for HTML."/>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 先引入 Vue -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="../js/lib/go-debug.js"></script>
     <script id="code">
         function init() {
@@ -48,6 +53,11 @@
                         },
                         mouseLeave: function (e, obj) {
                             showPorts(obj.part, false);
+                        },
+                        click: function (e, obj) {
+                            console.log(e)
+                            console.log(obj)
+                            console.log('click')
                         }
                     }
                 ];
@@ -88,7 +98,8 @@
                                 margin: 8,
                                 maxSize: new go.Size(160, NaN),
                                 wrap: go.TextBlock.WrapFit,
-                                editable: true
+//                                editable: true
+                                editable: false
                             },
                             new go.Binding("text").makeTwoWay())
                     ),
@@ -204,9 +215,9 @@
                         model: new go.GraphLinksModel([  // specify the contents of the Palette
                             {category: "Start", text: "Start"},
                             {text: "Step"},
-                            {text: "???", figure: "Diamond"},
-                            {category: "End", text: "End"},
-                            {category: "Comment", text: "Comment"}
+//                            {text: "???", figure: "Diamond"},
+                            {category: "End", text: "End"}
+//                            {category: "Comment", text: "Comment"}
                         ])
                     });
         }
@@ -276,7 +287,22 @@
 {"from":0, "to":4, "fromPort":"B", "toPort":"T"}
  ]}
   </textarea>
-
+<div @click="test">测试vue</div>
 </div>
+<script>
+    new Vue({
+        el: '#sample',
+        data: function () {
+            return {visible: false}
+        },
+        methods: {
+            test: function () {
+                console.log('test vue')
+                this.$message('这是一条消息提示');
+            }
+        }
+    })
+    console.log(Vue)
+</script>
 </body>
 </html>
