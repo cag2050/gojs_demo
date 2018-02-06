@@ -1,0 +1,23 @@
+{
+  "name": "browser-sync_gulp_demo161105",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cag2050/browser-sync_gulp_demo161105.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cag2050/browser-sync_gulp_demo161105/issues"
+  },
+  "homepage": "https://github.com/cag2050/browser-sync_gulp_demo161105#readme",
+  "devDependencies": {
+    "browser-sync": "^2.17.5",
+    "glup": "^1.0.14"
+  }
+}
