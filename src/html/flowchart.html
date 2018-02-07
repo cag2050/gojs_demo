@@ -25,17 +25,15 @@
                         outerVisible: true,
                         dialogFormVisible: false,
                         form: {
-                            textarea: '',
-//                            name: '',
-                            region: '',
-                            date1: '',
-                            date2: '',
-                            delivery: false,
-                            type: [],
-                            resource: '',
-                            desc: ''
+                            command: '',
+                            jobName: '',
+                            region: ''
                         },
-                        formLabelWidth: '120px'
+                        formLabelWidth: '120px',
+                        rules: {
+                            command: {type: 'string', required: true, message: '请选择', trigger: 'change'},
+                            shFile: {required: true, message: '请选择', trigger: 'change'}
+                        }
                     }
                 },
                 mounted: function () {
@@ -93,6 +91,7 @@
                                 console.log(obj.data.text)
                                 console.log('doubleClick')
 //                            window.myVue.$message('message')
+                                window.myVue.form.jobName = obj.data.text
                                 window.myVue.dialogFormVisible = true
                             }
                         }
@@ -134,7 +133,7 @@
                                     margin: 8,
                                     maxSize: new go.Size(160, NaN),
                                     wrap: go.TextBlock.WrapFit,
-//                                editable: true
+//                                    editable: true
                                     editable: false
                                 },
                                 new go.Binding("text").makeTwoWay())
@@ -250,7 +249,7 @@
                             nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
                             model: new go.GraphLinksModel([  // specify the contents of the Palette
                                 {category: "Start", text: "Start"},
-                                {text: "Step"},
+                                {text: "Job"},
 //                            {text: "???", figure: "Diamond"},
                                 {category: "End", text: "End"}
 //                            {category: "Comment", text: "Comment"}
@@ -290,7 +289,7 @@
           <div id="myPaletteDiv" style="border: solid 1px gray; height: 500px"></div>
         </span>
 
-        <span style="display: inline-block; vertical-align: top; padding: 5px; width:40%">
+            <span style="display: inline-block; vertical-align: top; padding: 5px; width:40%">
           <div id="myDiagramDiv" style="border: solid 1px gray; height: 500px"></div>
         </span>
         </div>
@@ -303,9 +302,9 @@
       "linkToPortIdProperty": "toPort",
       "nodeDataArray": [
     {"key":-1, "category":"Start", "loc":"175 0", "text":"Start"},
-    {"key":1, "loc":"175 100", "text":"Step"},
-    {"key":2, "loc":"175 190", "text":"Step"},
-    {"key":3, "loc":"175 270", "text":"Step"},
+    {"key":1, "loc":"175 100", "text":"Job"},
+    {"key":2, "loc":"175 190", "text":"Job"},
+    {"key":3, "loc":"175 270", "text":"Job"},
     {"key":-2, "category":"End", "loc":"175 340", "text":"End"}
      ],
       "linkDataArray": [
@@ -324,13 +323,16 @@
      ]}
       </textarea>
         <el-dialog title="表单" :visible.sync="dialogFormVisible" append-to-body>
-            <el-form :model="form">
-                <el-form-item label="命令语句" :label-width="formLabelWidth">
-                    <!--<el-input v-model="form.name" auto-complete="off"></el-input>-->
-                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="form.textarea">
+            <el-form :model="form" :rules="rules" ref="ruleForm">
+                <el-form-item label="任务名称：" :label-width="formLabelWidth">
+                    <el-input v-model="form.jobName" auto-complete="off"></el-input>
                     </el-input>
                 </el-form-item>
-                <el-form-item label="活动区域" :label-width="formLabelWidth">
+                <el-form-item label="命令语句：" :label-width="formLabelWidth" prop="command">
+                    <el-input type="textarea" :rows="3" placeholder="请输入内容" v-model="form.command">
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="上传sh文件：" :label-width="formLabelWidth" prop="shFile">
                     <el-select v-model="form.region" placeholder="请选择活动区域">
                         <el-option label="区域一" value="shanghai"></el-option>
                         <el-option label="区域二" value="beijing"></el-option>
