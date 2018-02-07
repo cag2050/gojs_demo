@@ -12,7 +12,7 @@
     <script src="../js/lib/go-debug.js"></script>
     <script id="code">
         function init() {
-            window.vue = new Vue({
+            window.myVue = new Vue({
                 el: '#sample',
                 data: function () {
                     return {
@@ -80,9 +80,9 @@
                             console.log(obj.data.key)
                             console.log(obj.data.text)
                             console.log('doubleClick')
-//                            window.vue.$message('message')
+//                            window.myVue.$message('message')
 //                            this.dialogFormVisible = true
-                            window.vue.dialogFormVisible = true
+                            window.myVue.dialogFormVisible = true
                         }
                     }
                 ];
