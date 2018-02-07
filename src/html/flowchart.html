@@ -10,6 +10,28 @@
         #sample .el-dialog__wrapper .el-dialog {
             width: 80%
         }
+
+        .editDialog .uploadFile {
+            width: 0;
+            height: 0;
+            opacity: 0;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .editDialog .formlabel {
+            height: 40px;
+            line-height: 40px;
+            border: 1px solid #d8dce5;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 14px;
+            margin-right: 20px;
+            padding: 0 15px;
+            position: relative;
+            cursor: pointer;
+        }
     </style>
     <!-- 先引入 Vue -->
     <script src="../js/lib/vue.js"></script>
@@ -31,16 +53,57 @@
                         },
                         formLabelWidth: '120px',
                         rules: {
-                            command: {type: 'string', required: true, message: '请选择', trigger: 'change'},
-                            shFile: {required: true, message: '请选择', trigger: 'change'}
-                        }
+                            command: {type: 'string', required: true, message: '请选择', trigger: 'change'}
+                        },
+                        uploadInfo: '选择.sh文件上传',
+                        file: null
                     }
                 },
                 mounted: function () {
-                    console.log('mounted')
-//                    this.outerVisible = true
                 },
-                methods: {}
+                methods: {
+                    changeFiles: function (e) {
+                        let that = this
+                        this.file = e.target.files[0]
+                        this.uploadInfo = '文件上传中...'
+                        var reader = new FileReader()
+                        reader.readAsDataURL(this.file)
+                        reader.onload = function (e) {
+                            that.uploadInfo = that.file.name + ' 上传完成，点击重新上传'
+                        }
+                        this.$refs.fileRef.value = ''
+                    },
+                    handleClose: function () {
+                        this.uploadInfo = '选择.sh文件上传'
+                        this.$refs.fileRef.value = ''
+                        this.file = null
+                    },
+                    submitForm: function (formName) {
+                        var _this = this
+                        this.$refs[formName].validate(function (valid) {
+                            if (valid) {
+                                if (_this.file !== null) {
+                                    let formData = new FormData()
+                                    formData.append('command', _this.form.command)
+                                    formData.append('file', _this.file)
+                                    // post请求
+                                } else {
+                                    _this.$message({
+                                        type: 'warn',
+                                        message: '请先选择你要上传的文件！',
+                                        duration: 3000,
+                                        showClose: true
+                                    })
+                                }
+                            } else {
+                                return false
+                            }
+                        })
+                    },
+                    submitTask: function () {
+                        console.log(111)
+                    }
+                }
             })
             Vue.nextTick(function () {
                 var MAKE = go.GraphObject.make;  // for conciseness in defining templates
@@ -87,10 +150,11 @@
                             },
                             doubleClick: function (e, obj) {
                                 console.log(obj.data)
-                                console.log(obj.data.key)
-                                console.log(obj.data.text)
-                                console.log('doubleClick')
-//                            window.myVue.$message('message')
+                                /*
+                                 console.log(obj.data.key)
+                                 console.log(obj.data.text)
+                                 console.log('doubleClick')
+                                 */
                                 window.myVue.form.jobName = obj.data.text
                                 window.myVue.dialogFormVisible = true
                             }
@@ -133,8 +197,8 @@
                                     margin: 8,
                                     maxSize: new go.Size(160, NaN),
                                     wrap: go.TextBlock.WrapFit,
-//                                    editable: true
-                                    editable: false
+                                    editable: true
+//                                    editable: false
                                 },
                                 new go.Binding("text").makeTwoWay())
                         ),
@@ -150,7 +214,11 @@
                             MAKE(go.Shape, "Circle",
                                 {minSize: new go.Size(40, 40), fill: "#79C900", stroke: null}),
                             MAKE(go.TextBlock, "Start",
-                                {font: "bold 11pt Helvetica, Arial, sans-serif", stroke: lightText},
+                                {
+                                    font: "bold 11pt Helvetica, Arial, sans-serif", stroke: lightText,
+                                    editable: true
+//                                    editable: false
+                                },
                                 new go.Binding("text"))
                         ),
                         // three named ports, one on each side except the top, all output only:
@@ -249,7 +317,8 @@
                             nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
                             model: new go.GraphLinksModel([  // specify the contents of the Palette
                                 {category: "Start", text: "Start"},
-                                {text: "Job"},
+                                {text: "Command"},
+                                {text: "Command2"},
 //                            {text: "???", figure: "Diamond"},
                                 {category: "End", text: "End"}
 //                            {category: "Comment", text: "Comment"}
@@ -269,6 +338,7 @@
         function save() {
             console.log('save')
             document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+            console.log(document.getElementById("mySavedModel").value)
             myDiagram.isModified = false;
         }
         function load() {
@@ -282,66 +352,56 @@
 <body onload="init()">
 <!--<div onclick="showOuterDialog()">显示外层div</div>-->
 <div id="sample">
-    <el-dialog title="外层 Dialog" :visible.sync="outerVisible">
-        <h3>GoJS Flowchart</h3>
+    <el-dialog title="任务流程" :visible.sync="outerVisible">
         <div style="width:100%; white-space:nowrap;">
-        <span style="display: inline-block; vertical-align: top; padding: 5px; width:120px">
-          <div id="myPaletteDiv" style="border: solid 1px gray; height: 500px"></div>
-        </span>
+            <span style="display: inline-block; vertical-align: top; padding: 5px; width:120px">
+              <div id="myPaletteDiv" style="border: solid 1px gray; height: 400px"></div>
+            </span>
 
             <span style="display: inline-block; vertical-align: top; padding: 5px; width:40%">
-          <div id="myDiagramDiv" style="border: solid 1px gray; height: 500px"></div>
-        </span>
+              <div id="myDiagramDiv" style="border: solid 1px gray; height: 400px"></div>
+            </span>
         </div>
-        <button id="SaveButton" onclick="save()">保存</button>
+        <button id="SaveButton" onclick="save()">保存任务</button>
+        <button @click="submitTask">提交任务</button>
+        <!--<el-button type="primary" @click="submitTask">提交任务</el-button>-->
         <button onclick="load()" style="display: none">Load</button>
         <!--Diagram Model saved in JSON format:-->
         <textarea id="mySavedModel" style="width:100%;height:300px;display: none;">
     { "class": "go.GraphLinksModel",
       "linkFromPortIdProperty": "fromPort",
       "linkToPortIdProperty": "toPort",
-      "nodeDataArray": [
-    {"key":-1, "category":"Start", "loc":"175 0", "text":"Start"},
-    {"key":1, "loc":"175 100", "text":"Job"},
-    {"key":2, "loc":"175 190", "text":"Job"},
-    {"key":3, "loc":"175 270", "text":"Job"},
-    {"key":-2, "category":"End", "loc":"175 340", "text":"End"}
-     ],
-      "linkDataArray": [
-    {"from":1, "to":2, "fromPort":"B", "toPort":"T"},
-    {"from":2, "to":3, "fromPort":"B", "toPort":"T"},
-    {"from":3, "to":4, "fromPort":"B", "toPort":"T"},
-    {"from":4, "to":6, "fromPort":"B", "toPort":"T"},
-    {"from":6, "to":7, "fromPort":"B", "toPort":"T"},
-    {"from":7, "to":8, "fromPort":"B", "toPort":"T"},
-    {"from":8, "to":-2, "fromPort":"B", "toPort":"T"},
-    {"from":-1, "to":0, "fromPort":"B", "toPort":"T"},
-    {"from":-1, "to":1, "fromPort":"B", "toPort":"T"},
-    {"from":-1, "to":5, "fromPort":"B", "toPort":"T"},
-    {"from":5, "to":4, "fromPort":"B", "toPort":"T"},
-    {"from":0, "to":4, "fromPort":"B", "toPort":"T"}
-     ]}
-      </textarea>
-        <el-dialog title="表单" :visible.sync="dialogFormVisible" append-to-body>
+      "nodeDataArray": [],
+      "linkDataArray": []
+    }
+        </textarea>
+        <el-dialog class='editDialog' title="编辑" :visible.sync="dialogFormVisible" @close="handleClose" append-to-body>
             <el-form :model="form" :rules="rules" ref="ruleForm">
-                <el-form-item label="任务名称：" :label-width="formLabelWidth">
-                    <el-input v-model="form.jobName" auto-complete="off"></el-input>
-                    </el-input>
-                </el-form-item>
+                <!--<el-form-item label="任务名称：" :label-width="formLabelWidth">-->
+                <!--<el-input v-model="form.jobName" auto-complete="off"></el-input>-->
+                <!--</el-input>-->
+                <!--</el-form-item>-->
                 <el-form-item label="命令语句：" :label-width="formLabelWidth" prop="command">
                     <el-input type="textarea" :rows="3" placeholder="请输入内容" v-model="form.command">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="上传sh文件：" :label-width="formLabelWidth" prop="shFile">
-                    <el-select v-model="form.region" placeholder="请选择活动区域">
-                        <el-option label="区域一" value="shanghai"></el-option>
-                        <el-option label="区域二" value="beijing"></el-option>
-                    </el-select>
+                <!--<el-form-item label="上传sh文件：" :label-width="formLabelWidth" prop="shFile">-->
+                <!--<el-select v-model="form.region" placeholder="请选择活动区域">-->
+                <!--<el-option label="区域一" value="shanghai"></el-option>-->
+                <!--<el-option label="区域二" value="beijing"></el-option>-->
+                <!--</el-select>-->
+                <!--</el-form-item>-->
+                <el-form-item label="上传sh文件：" :label-width="formLabelWidth">
+                    <label for="file" class="formlabel">
+                        <span>{{ uploadInfo }}</span>
+                        <input class="uploadFile" type="file" name="file" id='file' @change="changeFiles" ref='fileRef'
+                               accept=".sh">
+                    </label>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
             </div>
         </el-dialog>
     </el-dialog>
