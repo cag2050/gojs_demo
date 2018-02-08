@@ -149,14 +149,18 @@
                                 showPorts(obj.part, false);
                             },
                             doubleClick: function (e, obj) {
+                                if (obj.data.category === "Command" && obj.data.loc.split(' ')[0] !== '0') {
+                                    window.myVue.form.jobName = obj.data.text
+                                    window.myVue.dialogFormVisible = true
+                                }
                                 console.log(obj.data)
+                                console.log(obj.part)
+                                console.log(e)
                                 /*
-                                 console.log(obj.data.key)
-                                 console.log(obj.data.text)
-                                 console.log('doubleClick')
-                                 */
-                                window.myVue.form.jobName = obj.data.text
-                                window.myVue.dialogFormVisible = true
+                                console.log(obj.data.key)
+                                console.log(obj.data.text)
+                                console.log('doubleClick')
+                                */
                             }
                         }
                     ];
@@ -191,6 +195,32 @@
                                 {fill: "#00A9C9", stroke: null},
                                 new go.Binding("figure", "figure")),
                             MAKE(go.TextBlock,
+                                {
+                                    font: "bold 11pt Helvetica, Arial, sans-serif",
+                                    stroke: lightText,
+                                    margin: 8,
+                                    maxSize: new go.Size(160, NaN),
+                                    wrap: go.TextBlock.WrapFit,
+                                    editable: true
+//                                    editable: false
+                                },
+                                new go.Binding("text").makeTwoWay())
+                        ),
+                        // four named ports, one on each side:
+                        makePort("T", go.Spot.Top, false, true),
+                        makePort("L", go.Spot.Left, true, true),
+                        makePort("R", go.Spot.Right, true, true),
+                        makePort("B", go.Spot.Bottom, true, false)
+                    ));
+                myDiagram.nodeTemplateMap.add("Command",  // the default category
+//                    MAKE(go.Node, "Spot",
+                    MAKE(go.Node, "Spot", nodeStyle(),
+                        // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
+                        MAKE(go.Panel, "Auto",
+                            MAKE(go.Shape, "Rectangle",
+                                {fill: "#00A9C9", stroke: null},
+                                new go.Binding("figure", "figure")),
+                            MAKE(go.TextBlock, "command",
                                 {
                                     font: "bold 11pt Helvetica, Arial, sans-serif",
                                     stroke: lightText,
@@ -317,8 +347,7 @@
                             nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
                             model: new go.GraphLinksModel([  // specify the contents of the Palette
                                 {category: "Start", text: "Start"},
-                                {text: "Command"},
-                                {text: "Command2"},
+                                {category: "Command", text: "Command"},
 //                            {text: "???", figure: "Diamond"},
                                 {category: "End", text: "End"}
 //                            {category: "Comment", text: "Comment"}
