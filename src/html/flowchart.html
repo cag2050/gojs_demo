@@ -47,29 +47,70 @@
                         outerVisible: true,
                         dialogFormVisible: false,
                         form: {
+                            jobType: '',
                             command: '',
                             jobName: '',
-                            region: ''
+                            jobDependencies: ''
                         },
                         formLabelWidth: '120px',
                         rules: {
                             command: {type: 'string', required: true, message: '请选择', trigger: 'change'}
                         },
                         uploadInfo: '选择.sh文件上传',
-                        file: null
+                        file: null,
+                        initJson: {}
                     }
                 },
                 mounted: function () {
+                    this.initJson = {
+                        "class": "go.GraphLinksModel",
+                        "linkFromPortIdProperty": "fromPort",
+                        "linkToPortIdProperty": "toPort",
+                        "nodeDataArray": [
+                            {
+                                "category": "Command",
+                                "text": "Command1",
+                                "key": -2,
+                                "loc": "-93.90625 -344.50000000000006"
+                            },
+                            {"category": "Command", "text": "Command2", "key": -3, "loc": "-111.796875 -289.25"},
+                            {"category": "End", "text": "End", "key": -4, "loc": "-115.796875 -214.25"},
+                            {"category": "Start", "text": "Start", "key": -1, "loc": "-91.796875 -416.25"}
+                        ],
+                        "linkDataArray": [
+                            {
+                                "from": -2,
+                                "to": -3,
+                                "fromPort": "B",
+                                "toPort": "T",
+                                "points": [-93.90625, -328.06227569580085, -93.90625, -318.06227569580085, -93.90625, -316.875, -111.796875, -316.875, -111.796875, -315.6877243041992, -111.796875, -305.6877243041992]
+                            },
+                            {
+                                "from": -1,
+                                "to": -2,
+                                "fromPort": "B",
+                                "toPort": "T",
+                                "points": [-91.796875, -390.91365938408427, -91.796875, -380.91365938408427, -91.796875, -375.92569184414174, -93.90625, -375.92569184414174, -93.90625, -370.93772430419926, -93.90625, -360.93772430419926]
+                            },
+                            {
+                                "from": -3,
+                                "to": -4,
+                                "fromPort": "B",
+                                "toPort": "T",
+                                "points": [-111.796875, -272.8122756958008, -111.796875, -262.8122756958008, -111.796875, -254.07549763169402, -115.796875, -254.07549763169402, -115.796875, -245.33871956758722, -115.796875, -235.33871956758722]
+                            }
+                        ]
+                    }
                 },
                 methods: {
                     changeFiles: function (e) {
-                        let that = this
+                        let _this = this
                         this.file = e.target.files[0]
                         this.uploadInfo = '文件上传中...'
                         var reader = new FileReader()
                         reader.readAsDataURL(this.file)
                         reader.onload = function (e) {
-                            that.uploadInfo = that.file.name + ' 上传完成，点击重新上传'
+                            _this.uploadInfo = _this.file.name + ' 上传完成，点击重新上传'
                         }
                         this.$refs.fileRef.value = ''
                     },
@@ -150,17 +191,16 @@
                             },
                             doubleClick: function (e, obj) {
                                 if (obj.data.category === "Command" && obj.data.loc.split(' ')[0] !== '0') {
+                                    window.myVue.form.jobType = obj.data.category
                                     window.myVue.form.jobName = obj.data.text
                                     window.myVue.dialogFormVisible = true
+                                    // 计算该任务的依赖
                                 }
-                                console.log(obj.data)
-                                console.log(obj.part)
-                                console.log(e)
                                 /*
-                                console.log(obj.data.key)
-                                console.log(obj.data.text)
-                                console.log('doubleClick')
-                                */
+                                 console.log(obj.data.key)
+                                 console.log(obj.data.text)
+                                 console.log('doubleClick')
+                                 */
                             }
                         }
                     ];
@@ -246,8 +286,8 @@
                             MAKE(go.TextBlock, "Start",
                                 {
                                     font: "bold 11pt Helvetica, Arial, sans-serif", stroke: lightText,
-                                    editable: true
-//                                    editable: false
+//                                    editable: true
+                                    editable: false
                                 },
                                 new go.Binding("text"))
                         ),
@@ -262,7 +302,11 @@
                             MAKE(go.Shape, "Circle",
                                 {minSize: new go.Size(40, 40), fill: "#DC3C00", stroke: null}),
                             MAKE(go.TextBlock, "End",
-                                {font: "bold 11pt Helvetica, Arial, sans-serif", stroke: lightText},
+                                {
+                                    font: "bold 11pt Helvetica, Arial, sans-serif",
+                                    stroke: lightText,
+                                    editable: false
+                                },
                                 new go.Binding("text"))
                         ),
                         // three named ports, one on each side except the bottom, all input only:
@@ -366,12 +410,15 @@
         // Show the diagram's model in JSON format that the user may edit
         function save() {
             console.log('save')
-            document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-            console.log(document.getElementById("mySavedModel").value)
+            window.myVue.initJson = myDiagram.model.toJson();
+//            document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+//            console.log(document.getElementById("mySavedModel").value)
+            console.log(window.myVue.initJson)
             myDiagram.isModified = false;
         }
         function load() {
-            myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+            myDiagram.model = go.Model.fromJson(window.myVue.initJson);
+//            myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
         }
         function showOuterDialog() {
             window.myVue.outerVisible = true
@@ -397,35 +444,45 @@
         <button onclick="load()" style="display: none">Load</button>
         <!--Diagram Model saved in JSON format:-->
         <textarea id="mySavedModel" style="width:100%;height:300px;display: none;">
-    { "class": "go.GraphLinksModel",
-      "linkFromPortIdProperty": "fromPort",
-      "linkToPortIdProperty": "toPort",
-      "nodeDataArray": [],
-      "linkDataArray": []
-    }
+{ "class": "go.GraphLinksModel",
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [
+{"category":"Command", "text":"Command1", "key":-2, "loc":"-93.90625 -344.50000000000006"},
+{"category":"Command", "text":"Command2", "key":-3, "loc":"-111.796875 -289.25"},
+{"category":"End", "text":"End", "key":-4, "loc":"-115.796875 -214.25"},
+{"category":"Start", "text":"Start", "key":-1, "loc":"-91.796875 -416.25"}
+ ],
+  "linkDataArray": [
+{"from":-2, "to":-3, "fromPort":"B", "toPort":"T", "points":[-93.90625,-328.06227569580085,-93.90625,-318.06227569580085,-93.90625,-316.875,-111.796875,-316.875,-111.796875,-315.6877243041992,-111.796875,-305.6877243041992]},
+{"from":-1, "to":-2, "fromPort":"B", "toPort":"T", "points":[-91.796875,-390.91365938408427,-91.796875,-380.91365938408427,-91.796875,-375.92569184414174,-93.90625,-375.92569184414174,-93.90625,-370.93772430419926,-93.90625,-360.93772430419926]},
+{"from":-3, "to":-4, "fromPort":"B", "toPort":"T", "points":[-111.796875,-272.8122756958008,-111.796875,-262.8122756958008,-111.796875,-254.07549763169402,-115.796875,-254.07549763169402,-115.796875,-245.33871956758722,-115.796875,-235.33871956758722]}
+ ]}
         </textarea>
         <el-dialog class='editDialog' title="编辑" :visible.sync="dialogFormVisible" @close="handleClose" append-to-body>
             <el-form :model="form" :rules="rules" ref="ruleForm">
-                <!--<el-form-item label="任务名称：" :label-width="formLabelWidth">-->
-                <!--<el-input v-model="form.jobName" auto-complete="off"></el-input>-->
-                <!--</el-input>-->
-                <!--</el-form-item>-->
+                <el-form-item label="任务类型：" :label-width="formLabelWidth">
+                    <el-input v-model="form.jobType" auto-complete="off" disabled></el-input>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="任务名称：" :label-width="formLabelWidth">
+                    <el-input v-model="form.jobName" auto-complete="off" disabled></el-input>
+                    </el-input>
+                </el-form-item>
                 <el-form-item label="命令语句：" :label-width="formLabelWidth" prop="command">
                     <el-input type="textarea" :rows="3" placeholder="请输入内容" v-model="form.command">
                     </el-input>
                 </el-form-item>
-                <!--<el-form-item label="上传sh文件：" :label-width="formLabelWidth" prop="shFile">-->
-                <!--<el-select v-model="form.region" placeholder="请选择活动区域">-->
-                <!--<el-option label="区域一" value="shanghai"></el-option>-->
-                <!--<el-option label="区域二" value="beijing"></el-option>-->
-                <!--</el-select>-->
-                <!--</el-form-item>-->
                 <el-form-item label="上传sh文件：" :label-width="formLabelWidth">
                     <label for="file" class="formlabel">
                         <span>{{ uploadInfo }}</span>
                         <input class="uploadFile" type="file" name="file" id='file' @change="changeFiles" ref='fileRef'
                                accept=".sh">
                     </label>
+                </el-form-item>
+                <el-form-item label="任务依赖：" :label-width="formLabelWidth">
+                    <el-input v-model="form.jobDependencies" auto-complete="off" disabled></el-input>
+                    </el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
