@@ -47,6 +47,7 @@
                         outerVisible: true,
                         dialogFormVisible: false,
                         form: {
+                            jobKey: '',
                             jobType: '',
                             command: '',
                             jobName: '',
@@ -191,16 +192,31 @@
                             },
                             doubleClick: function (e, obj) {
                                 if (obj.data.category === "Command" && obj.data.loc.split(' ')[0] !== '0') {
+                                    window.myVue.form.jobKey = obj.data.key
                                     window.myVue.form.jobType = obj.data.category
                                     window.myVue.form.jobName = obj.data.text
                                     window.myVue.dialogFormVisible = true
                                     // 计算该任务的依赖
+                                    var fromKeyArr = []
+                                    var linkLen = window.myVue.initJson.linkDataArray.length
+                                    for (var i = 0; i < linkLen; i++) {
+                                        if (window.myVue.initJson.linkDataArray[i].to === obj.data.key) {
+                                            fromKeyArr.push(window.myVue.initJson.linkDataArray[i].from)
+                                        }
+                                    }
+                                    console.log('fromKeyArr=')
+                                    console.log(fromKeyArr)
+//                                    console.log('window.myVue.initJson.nodeDataArray=')
+//                                    console.log(window.myVue.initJson.nodeDataArray)
+                                    var fromTextArr = []
+                                    var nodeLen = window.myVue.initJson.nodeDataArray.length
+                                    for (var i = 0; i < nodeLen; i++) {
+                                        console.log(window.myVue.initJson.nodeDataArray[i])
+                                    }
                                 }
-                                /*
+                                 console.log(obj.data)
                                  console.log(obj.data.key)
-                                 console.log(obj.data.text)
-                                 console.log('doubleClick')
-                                 */
+//                                 console.log(obj.data.text)
                             }
                         }
                     ];
@@ -461,6 +477,10 @@
         </textarea>
         <el-dialog class='editDialog' title="编辑" :visible.sync="dialogFormVisible" @close="handleClose" append-to-body>
             <el-form :model="form" :rules="rules" ref="ruleForm">
+                <el-form-item label="任务Key：" :label-width="formLabelWidth">
+                    <el-input v-model="form.jobKey" auto-complete="off" disabled></el-input>
+                    </el-input>
+                </el-form-item>
                 <el-form-item label="任务类型：" :label-width="formLabelWidth">
                     <el-input v-model="form.jobType" auto-complete="off" disabled></el-input>
                     </el-input>
