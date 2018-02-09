@@ -143,7 +143,7 @@
                         })
                     },
                     submitTask: function () {
-                        console.log(111)
+                        console.log('submitTask')
                     }
                 }
             })
@@ -170,6 +170,7 @@
                         if (idx >= 0) document.title = document.title.substr(0, idx);
                     }
                 });
+
                 // helper definitions for node templates
                 function nodeStyle() {
                     return [
@@ -204,19 +205,18 @@
                                             fromKeyArr.push(window.myVue.initJson.linkDataArray[i].from)
                                         }
                                     }
-                                    console.log('fromKeyArr=')
-                                    console.log(fromKeyArr)
-//                                    console.log('window.myVue.initJson.nodeDataArray=')
-//                                    console.log(window.myVue.initJson.nodeDataArray)
+                                    var fromKeyArrLen = fromKeyArr.length
                                     var fromTextArr = []
                                     var nodeLen = window.myVue.initJson.nodeDataArray.length
                                     for (var i = 0; i < nodeLen; i++) {
-                                        console.log(window.myVue.initJson.nodeDataArray[i])
+                                        for (var j = 0; j < fromKeyArrLen; j++) {
+                                            if (window.myVue.initJson.nodeDataArray[i].key === fromKeyArr[j]) {
+                                                fromTextArr.push(window.myVue.initJson.nodeDataArray[i].text)
+                                            }
+                                        }
                                     }
+                                    window.myVue.form.jobDependencies = fromTextArr.join()
                                 }
-                                 console.log(obj.data)
-                                 console.log(obj.data.key)
-//                                 console.log(obj.data.text)
                             }
                         }
                     ];
@@ -415,6 +415,7 @@
                         });
             })
         }
+
         // Make all ports on a node visible when the mouse is over the node
         function showPorts(node, show) {
             var diagram = node.diagram;
@@ -423,19 +424,20 @@
                 port.stroke = (show ? "white" : null);
             });
         }
+
         // Show the diagram's model in JSON format that the user may edit
         function save() {
             console.log('save')
             window.myVue.initJson = myDiagram.model.toJson();
 //            document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-//            console.log(document.getElementById("mySavedModel").value)
-            console.log(window.myVue.initJson)
             myDiagram.isModified = false;
         }
+
         function load() {
             myDiagram.model = go.Model.fromJson(window.myVue.initJson);
 //            myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
         }
+
         function showOuterDialog() {
             window.myVue.outerVisible = true
         }
