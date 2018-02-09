@@ -1,4 +1,4 @@
-browser-sync和gulp例子
+配置了 browser-sync和gulp，实现实时调试
 
 说明：  
 1. 在项目目录运行命令:gulp，会打开gulpfile.js中设置的baseDir目录下的index.html。  
