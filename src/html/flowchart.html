@@ -156,6 +156,8 @@
                     },
                     submitTask: function () {
                         console.log('submitTask')
+                        console.log(window.myVue.initJson)
+                        // post 提交：将 window.myVue.initJson 提交给后端保存
                     }
                 }
             })
@@ -211,7 +213,6 @@
                                     window.myVue.dialogFormVisible = true
                                     // 计算该任务的依赖
                                     var fromKeyArr = []
-                                    console.log(window.myVue.initJson.linkDataArray)
                                     var linkLen = window.myVue.initJson.linkDataArray.length
                                     for (var i = 0; i < linkLen; i++) {
                                         if (window.myVue.initJson.linkDataArray[i].to === obj.data.key) {
@@ -471,8 +472,8 @@
               <div id="myDiagramDiv" style="border: solid 1px gray; height: 400px"></div>
             </span>
         </div>
-        <button id="SaveButton" onclick="save()">保存任务</button>
-        <button @click="submitTask">提交任务</button>
+        <button id="SaveButton" onclick="save()" style="font-size:14px;margin-top:10px;">保存任务名字</button>
+        <button @click="submitTask" style="font-size:14px;margin-top:10px;">提交任务</button>
         <!--<el-button type="primary" @click="submitTask">提交任务</el-button>-->
         <button onclick="load()" style="display: none">Load</button>
         <!--Diagram Model saved in JSON format:-->
