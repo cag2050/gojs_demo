@@ -51,9 +51,10 @@
                             jobType: '',
                             command: '22222',
                             jobName: '',
-                            jobDependencies: ''
+                            jobDependenciesKey: '',
+                            jobDependenciesName: ''
                         },
-                        formLabelWidth: '120px',
+                        formLabelWidth: '130px',
                         rules: {
                             command: {type: 'string', required: true, message: '请选择', trigger: 'change'}
                         },
@@ -129,12 +130,17 @@
                                     formData.append('command', _this.form.command)
                                     formData.append('file', _this.file)
                                     // post请求
+                                    // 开始== 想在表单里修改jobName，更新到gojs model里，失败，报错：RangeError: Maximum call stack size exceeded
+                                    /*
                                     var nodeLen = window.myVue.initJson.nodeDataArray.length
                                     for (var i = 0; i < nodeLen; i++) {
                                         if (window.myVue.initJson.nodeDataArray[i].key === _this.form.jobKey) {
                                             window.myVue.initJson.nodeDataArray[i].text = _this.form.jobName
                                         }
                                     }
+                                    load()
+                                    */
+                                    // 结束== 想在表单里修改jobName
                                 } else {
                                     _this.$message({
                                         type: 'warn',
@@ -205,6 +211,7 @@
                                     window.myVue.dialogFormVisible = true
                                     // 计算该任务的依赖
                                     var fromKeyArr = []
+                                    console.log(window.myVue.initJson.linkDataArray)
                                     var linkLen = window.myVue.initJson.linkDataArray.length
                                     for (var i = 0; i < linkLen; i++) {
                                         if (window.myVue.initJson.linkDataArray[i].to === obj.data.key) {
@@ -221,7 +228,8 @@
                                             }
                                         }
                                     }
-                                    window.myVue.form.jobDependencies = fromTextArr.join()
+                                    window.myVue.form.jobDependenciesKey = fromKeyArr.join()
+                                    window.myVue.form.jobDependenciesName = fromTextArr.join()
                                 }
                             }
                         }
@@ -435,6 +443,7 @@
         function save() {
             console.log('save')
             window.myVue.initJson = myDiagram.model.toJson();
+            console.log(window.myVue.initJson)
 //            document.getElementById("mySavedModel").value = myDiagram.model.toJson();
             myDiagram.isModified = false;
         }
@@ -494,7 +503,7 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item label="任务名称：" :label-width="formLabelWidth">
-                    <el-input v-model="form.jobName" auto-complete="off"></el-input>
+                    <el-input v-model="form.jobName" auto-complete="off" disabled></el-input>
                     </el-input>
                 </el-form-item>
                 <el-form-item label="命令语句：" :label-width="formLabelWidth" prop="command">
@@ -508,8 +517,12 @@
                                accept=".sh">
                     </label>
                 </el-form-item>
-                <el-form-item label="任务依赖：" :label-width="formLabelWidth">
-                    <el-input v-model="form.jobDependencies" auto-complete="off" disabled></el-input>
+                <el-form-item label="依赖的任务key：" :label-width="formLabelWidth">
+                    <el-input v-model="form.jobDependenciesKey" auto-complete="off" disabled></el-input>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="依赖的任务名称：" :label-width="formLabelWidth">
+                    <el-input v-model="form.jobDependenciesName" auto-complete="off" disabled></el-input>
                     </el-input>
                 </el-form-item>
             </el-form>
