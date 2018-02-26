@@ -65,7 +65,7 @@
                     }
                 },
                 mounted: function () {
-                    this.testAxios()
+//                    this.testAxios()
                     this.initJson = {
                         "class": "go.GraphLinksModel",
                         "linkFromPortIdProperty": "fromPort",
@@ -141,15 +141,17 @@
                                     formData.append('command', _this.form.command)
                                     formData.append('file', _this.file)
                                     // post请求
-                                    // 开始== 想在表单里修改jobName，更新到gojs model里，失败，报错：RangeError: Maximum call stack size exceeded
+                                    // 开始== 想在表单里修改jobName，更新到gojs model里，失败，load()执行报错：RangeError: Maximum call stack size exceeded
                                     /*
-                                    var nodeLen = window.myVue.initJson.nodeDataArray.length
+                                    var nodeLen = _this.initJson.nodeDataArray.length
                                     for (var i = 0; i < nodeLen; i++) {
-                                        if (window.myVue.initJson.nodeDataArray[i].key === _this.form.jobKey) {
-                                            window.myVue.initJson.nodeDataArray[i].text = _this.form.jobName
+                                        if (_this.initJson.nodeDataArray[i].key === _this.form.jobKey) {
+                                            _this.initJson.nodeDataArray[i].text = _this.form.jobName
                                         }
                                     }
-                                    load()
+//                                    console.log(_this.initJson)
+//                                  load()
+                                    myDiagram.model = go.Model.fromJson(_this.initJson)
                                     */
                                     // 结束== 想在表单里修改jobName
                                 } else {
@@ -483,7 +485,7 @@
               <div id="myDiagramDiv" style="border: solid 1px gray; height: 400px"></div>
             </span>
         </div>
-        <button id="SaveButton" onclick="save()" style="font-size:14px;margin-top:10px;">保存任务名字</button>
+        <button id="SaveButton" onclick="save()" style="font-size:14px;margin-top:10px;">保存任务名字修改</button>
         <button @click="submitTask" style="font-size:14px;margin-top:10px;">提交任务</button>
         <!--<el-button type="primary" @click="submitTask">提交任务</el-button>-->
         <button onclick="load()" style="display: none">Load</button>
@@ -515,7 +517,8 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item label="任务名称：" :label-width="formLabelWidth">
-                    <el-input v-model="form.jobName" auto-complete="off" disabled></el-input>
+                    <el-input v-model="form.jobName" auto-complete="off"></el-input>
+                    <!--<el-input v-model="form.jobName" auto-complete="off" disabled></el-input>-->
                     </el-input>
                 </el-form-item>
                 <el-form-item label="命令语句：" :label-width="formLabelWidth" prop="command">
