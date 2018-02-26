@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <!--<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
     <link rel="stylesheet" href="https://cdn.bootcss.com/element-ui/2.1.0/theme-chalk/index.css">
+    <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
     <style>
         #sample .el-dialog__wrapper .el-dialog {
             width: 80%
@@ -64,6 +65,7 @@
                     }
                 },
                 mounted: function () {
+                    this.testAxios()
                     this.initJson = {
                         "class": "go.GraphLinksModel",
                         "linkFromPortIdProperty": "fromPort",
@@ -105,6 +107,15 @@
                     }
                 },
                 methods: {
+                    testAxios: function () {
+                        axios.get('/user?ID=12345')
+                            .then(function (response) {
+                                console.log(response);
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });
+                    },
                     changeFiles: function (e) {
                         let _this = this
                         this.file = e.target.files[0]
