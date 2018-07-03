@@ -42,6 +42,9 @@
     <script src="../js/lib/go-debug.js"></script>
     <script id="code">
         function init() {
+            console.log('window')
+            console.log(window)
+            // window.ElementUI = window.ELEMENT
             window.myVue = new Vue({
                 el: '#sample',
                 data: function () {
@@ -67,6 +70,11 @@
                 },
                 mounted: function () {
 //                    this.testAxios()
+                    console.log('this')
+                    console.log(this)
+                    console.log(ELEMENT)
+                    ELEMENT.Message('ssss')
+                    // ElementUI.Message('ssss')
                     this.initJson = {
                         "class": "go.GraphLinksModel",
                         "linkFromPortIdProperty": "fromPort",
@@ -88,6 +96,8 @@
                                 "to": -3,
                                 "fromPort": "B",
                                 "toPort": "T",
+                                "text": "up or timer",
+                                "curviness": -20,
                                 "points": [-93.90625, -328.06227569580085, -93.90625, -318.06227569580085, -93.90625, -316.875, -111.796875, -316.875, -111.796875, -315.6877243041992, -111.796875, -305.6877243041992]
                             },
                             {
@@ -378,7 +388,10 @@
                     ));
                 // replace the default Link template in the linkTemplateMap
                 myDiagram.linkTemplate =
-                    MAKE(go.Link,  // the whole link panel
+                    MAKE(go.Link,
+                        MAKE(go.TextBlock,                        // this is a Link label
+                        new go.Binding("text", "text")),
+                        // the whole link panel
                         {
                             routing: go.Link.AvoidsNodes,
                             curve: go.Link.JumpOver,
@@ -395,6 +408,7 @@
                                 link.findObject("HIGHLIGHT").stroke = "transparent";
                             }
                         },
+
                         new go.Binding("points").makeTwoWay(),
                         MAKE(go.Shape,  // the highlight shape, normally transparent
                             {isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT"}),
@@ -529,8 +543,7 @@
                 <el-form-item label="上传sh文件：" :label-width="formLabelWidth">
                     <label for="file" class="formlabel">
                         <span>{{ uploadInfo }}</span>
-                        <input class="uploadFile" type="file" name="file" id='file' @change="changeFiles" ref='fileRef'
-                               accept=".sh">
+                        <input class="uploadFile" type="file" name="file" id='file' @change="changeFiles" ref='fileRef' accept=".sh">
                     </label>
                 </el-form-item>
                 <el-form-item label="依赖的任务key：" :label-width="formLabelWidth">
